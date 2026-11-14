@@ -1,1 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>REPLACE: Your Site Title | Cybersecurity Project</title>
+<style>
+  /* COLORS: change the hex codes (like #3ddbd9) to restyle your site.
+     Each color name appears in 3 blocks: dark mode (:root) and two light-mode blocks. Change all 3 so both modes match. */
+  :root {
+    --bg:#0d1b2a; --surface:#14263a; --surface2:#1b3149; --text:#e6edf3; --muted:#a9b8c6;
+    --accent:#3ddbd9; --accent-ink:#04282a; --attack:#ff6b6f; --attack-bg:#3a1d1f; --defense:#4cc38a; --defense-bg:#17342a; --line:#2b4560;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg:#f3f7fb; --surface:#ffffff; --surface2:#e8f0f7; --text:#14202b; --muted:#4a5b6b;
+      --accent:#0b6e99; --accent-ink:#ffffff; --attack:#b3261e; --attack-bg:#fdecea; --defense:#1e7a34; --defense-bg:#e7f5ea; --line:#c5d3e0;
+    }
+  }
+  [data-theme="light"] {
+    --bg:#f3f7fb; --surface:#ffffff; --surface2:#e8f0f7; --text:#14202b; --muted:#4a5b6b;
+    --accent:#0b6e99; --accent-ink:#ffffff; --attack:#b3261e; --attack-bg:#fdecea; --defense:#1e7a34; --defense-bg:#e7f5ea; --line:#c5d3e0;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 4.5rem; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; line-height:1.65; font-size:1.05rem; }
+  a { color:var(--accent); }
+  :focus-visible { outline:3px solid var(--accent); outline-offset:2px; }
+  #progress { position:fixed; top:0; left:0; height:4px; width:0; background:var(--accent); z-index:50; }
+  .topbar { position:sticky; top:0; z-index:40; display:flex; flex-wrap:wrap; align-items:center; gap:.5rem 1.2rem; padding:.6rem 1.2rem; background:var(--surface); border-bottom:1px solid var(--line); }
+  .topbar a { text-decoration:none; font-weight:600; font-size:.95rem; color:var(--text); padding:.2rem .1rem; border-bottom:2px solid transparent; }
+  .topbar a:hover, .topbar a.active { border-bottom-color:var(--accent); }
+  .topbar button { margin-left:auto; }
+  button { font:inherit; cursor:pointer; border:1px solid var(--line); background:var(--surface2); color:var(--text); padding:.4rem .9rem; border-radius:999px; }
+  button:hover { border-color:var(--accent); }
+  button.primary { background:var(--accent); color:var(--accent-ink); border-color:var(--accent); font-weight:700; }
+
+  .hero { position:relative; overflow:hidden; padding:4.5rem 1.2rem 3.5rem; background:
+      radial-gradient(circle at 85% 20%, color-mix(in srgb, var(--accent) 28%, transparent), transparent 45%),
+      repeating-linear-gradient(0deg, transparent 0 39px, color-mix(in srgb, var(--accent) 10%, transparent) 39px 40px),
+      repeating-linear-gradient(90deg, transparent 0 39px, color-mix(in srgb, var(--accent) 10%, transparent) 39px 40px),
+      var(--bg); border-bottom:1px solid var(--line); }
+  .wrap { max-width:860px; margin:0 auto; }
+  .hero .wrap { padding-right:clamp(0px, 15vw, 190px); }
+  .hero h1 { font-size:clamp(2rem, 6vw, 3.4rem); line-height:1.1; margin:.2rem 0 .8rem; letter-spacing:-.02em; }
+  .byline { color:var(--muted); margin:0 0 1.2rem; }
+  .chips { display:flex; flex-wrap:wrap; gap:.5rem; margin:0; padding:0; list-style:none; }
+  .chips li { border:1px solid var(--line); background:var(--surface); border-radius:999px; padding:.25rem .8rem; font-size:.9rem; }
+  .chips li b { color:var(--accent); font-weight:700; }
+  .shield { position:absolute; right:4%; top:50%; transform:translateY(-50%); width:clamp(90px,16vw,170px); opacity:.9; }
+  @media (max-width:640px) { .shield { display:none; } }
+
+  main.wrap { padding:2rem 1.2rem 3rem; }
+  section.card { background:var(--surface); border:1px solid var(--line); border-left:6px solid var(--accent); border-radius:12px; padding:1.2rem 1.5rem 1.4rem; margin:1.6rem 0; }
+  section.card.attack-card { border-left-color:var(--attack); }
+  section.card.defense-card { border-left-color:var(--defense); }
+  section.card h2 { margin:.2rem 0 .6rem; font-size:1.6rem; }
+  h3 { margin:1.2rem 0 .3rem; }
+  .keyidea { background:var(--surface2); border-radius:10px; padding:.8rem 1rem; margin:1rem 0 0; }
+  .tag { display:inline-block; padding:.1rem .7rem; border-radius:6px; font-weight:700; font-size:.9rem; margin-right:.4rem; }
+  .tag.attack { background:var(--attack-bg); color:var(--attack); border:1px solid var(--attack); }
+  .tag.defense { background:var(--defense-bg); color:var(--defense); border:1px solid var(--defense); }
+
+  figure { margin:1.2rem 0; }
+  figure img { display:block; width:100%; height:auto; border-radius:10px; border:1px solid var(--line); background:var(--surface2); }
+  figcaption { color:var(--muted); font-size:.92rem; margin-top:.5rem; }
+
+  /* stepper */
+  .stepper { list-style:none; margin:1rem 0; padding:0; }
+  .stepper li { display:grid; grid-template-columns:2.4rem 1fr; gap:.8rem; padding:.7rem .8rem; border-radius:10px; border:1px solid transparent; cursor:pointer; }
+  .stepper li .dot { width:2.2rem; height:2.2rem; border-radius:50%; display:grid; place-items:center; font-weight:700; background:var(--attack-bg); color:var(--attack); border:2px solid var(--attack); }
+  .stepper li.defense .dot { background:var(--defense-bg); color:var(--defense); border-color:var(--defense); }
+  .stepper li.active { background:var(--surface2); border-color:var(--line); }
+  .stepper li:not(.active) .detail { display:none; }
+  .stepper li strong { display:block; }
+  .stepper-controls { display:flex; gap:.6rem; align-items:center; flex-wrap:wrap; }
+  .stepper-controls .count { color:var(--muted); font-size:.92rem; }
+
+  /* checklist + quiz */
+  .todo { list-style:none; padding:0; margin:.4rem 0; }
+  .todo li { margin:.4rem 0; }
+  .todo label { display:flex; gap:.7rem; align-items:flex-start; cursor:pointer; }
+  .todo input { margin-top:.45rem; width:1.1rem; height:1.1rem; accent-color:var(--defense); }
+  .todo-status { font-weight:700; color:var(--defense); }
+  .q { border:1px solid var(--line); border-radius:10px; padding:1rem 1.1rem; margin:1rem 0; background:var(--surface2); }
+  .q p { margin:.2rem 0 .7rem; }
+  .opts { display:grid; gap:.5rem; }
+  .opts button { text-align:left; border-radius:10px; }
+  .opts button.right { background:var(--defense-bg); border-color:var(--defense); color:var(--text); }
+  .opts button.wrong { background:var(--attack-bg); border-color:var(--attack); color:var(--text); }
+  .why { margin:.7rem 0 0; font-size:.97rem; color:var(--muted); }
+  .score { font-weight:700; }
+
+  ol.sources li { margin:.5rem 0; overflow-wrap:anywhere; }
+  .checker { border:2px dashed var(--line); border-radius:12px; padding:1rem 1.3rem; margin:2rem 0; }
+  .checker ul { list-style:none; padding:0; margin:.8rem 0 0; }
+  .checker li { margin:.3rem 0; }
+  .ok { color:var(--defense); font-weight:700; } .bad { color:var(--attack); font-weight:700; }
+  footer { border-top:1px solid var(--line); color:var(--muted); font-size:.92rem; padding:1.5rem 1.2rem 3rem; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto; } }
+</style>
+</head>
+<body>
+<div id="progress" aria-hidden="true"></div>
+
+<!-- EDITING HELP: see Step 6 in Canvas. To add a section to this menu, add a link like <a href="#mysection">My Section</a> and give your <section> the same id, id="mysection". -->
+<nav class="topbar" aria-label="Page sections">
+  <a href="#intro">Intro</a>
+  <a href="#ethics">Ethics</a>
+  <a href="#attack">Attack</a>
+  <a href="#protection">Protection</a>
+  <a href="#secplus">Security+</a>
+  <a href="#sources">Sources</a>
+  <button id="themeBtn" type="button" aria-label="Switch between dark and light mode">Dark / Light</button>
+</nav>
+
+<header class="hero">
+  <svg class="shield" viewBox="0 0 100 120" role="img" aria-label="Decorative shield">
+    <path d="M50 6 L92 22 V58 C92 86 72 106 50 114 C28 106 8 86 8 58 V22 Z" fill="none" stroke="var(--accent)" stroke-width="5"/>
+    <path d="M30 60 L45 75 L72 42" fill="none" stroke="var(--defense)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <div class="wrap">
+    <p class="byline">Cybersecurity A | Student project</p>
+    <h1 id="siteTitle">REPLACE: Your Site Title</h1>
+    <!-- Use your first name or an alias. Do NOT put your last name, school name, photos of yourself, phone, or address on a public site. -->
+    <p class="byline">By <strong>REPLACE: first name or alias</strong></p>
+    <ul class="chips">
+      <li><b>Ethics topic:</b> REPLACE (example: Responsible disclosure)</li>
+      <li><b>Attack topic:</b> REPLACE (example: Phishing)</li>
+      <li><b>Security+ objective:</b> REPLACE (example: 2.2)</li>
+      <li><b>Control type:</b> REPLACE (preventive, detective, corrective, or deterrent)</li>
+    </ul>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="card" id="intro">
+    <h2>Introduction</h2>
+    <p>REPLACE: In 3-4 sentences, tell visitors what your site covers (your ethics topic and your attack topic) and why both matter to everyday people such as students, families, and businesses.</p>
+    <div class="keyidea"><strong>Key idea in one sentence:</strong> REPLACE</div>
+  </section>
+
+  <section class="card" id="ethics">
+    <h2>The Ethics</h2>
+    <p><strong>Ethics topic:</strong> REPLACE</p>
+    <p><strong>The ethical question:</strong> REPLACE: write the question in one sentence, then explain in 2-3 sentences why it matters to everyday people.</p>
+    <h3>Who is helped and who is harmed?</h3>
+    <ul>
+      <li>REPLACE: who is helped (example: customers)</li>
+      <li>REPLACE: who is harmed (example: people whose data was exposed)</li>
+      <li>REPLACE: other people or groups affected (example: the company, researchers, the public)</li>
+    </ul>
+    <h3>What the law or a professional code says</h3>
+    <p>REPLACE: Name the law, policy, or professional code (for example the ISC2 Code of Ethics or the ACM Code of Ethics) and explain what it says about your question.</p>
+    <h3>Real-world example</h3>
+    <p>REPLACE: Name a real case, the date, and what happened.</p>
+    <h3>My position</h3>
+    <p>REPLACE: Take a side. Give at least two reasons.</p>
+    <h3>The other side</h3>
+    <p>REPLACE: Explain the strongest argument against your position, then explain why you still hold your position.</p>
+  </section>
+
+  <section class="card attack-card" id="attack">
+    <h2><span class="tag attack">ATTACK</span> The Attack</h2>
+    <p><strong>Attack topic:</strong> REPLACE &nbsp;|&nbsp; <strong>Security+ category:</strong> REPLACE (example: application attack, social engineering, malware, network attack)</p>
+    <p>REPLACE: Explain in plain language how the attack works. Describe the idea only. Do NOT post working attack code, real passwords, or instructions for hurting a real system.</p>
+    <h3>Real-world example</h3>
+    <p>REPLACE: Name a real incident, the date, and what happened.</p>
+
+    <!-- REQUIRED PICTURE
+         1. Make your OWN diagram of the attack and the protection (Google Drawings, Canva, draw.io, or PowerPoint) and export it as a PNG.
+         2. Name it with lowercase letters and no spaces, like attack-diagram.png.
+         3. UPLOAD it to this repository: open the repository on github.com, click Add file > Upload files, drag the PNG in, then click Commit changes.
+            If you skip the upload, your picture will NOT appear on your site.
+         4. Change the src below from the gray placeholder to your file name (exactly the same spelling, including .png), delete the word data-placeholder, and write real alt text and a caption.
+         No photos of people. If you use anything made by someone else, credit them in your Sources. -->
+    <figure>
+      <img id="mainPicture" data-placeholder src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20800%20300%22%3E%3Crect%20width=%22800%22%20height=%22300%22%20fill=%22%2314263a%22/%3E%3Cg%20font-family=%22Arial,Helvetica,sans-serif%22%20font-size=%2222%22%20text-anchor=%22middle%22%3E%3Crect%20x=%2240%22%20y=%2295%22%20width=%22190%22%20height=%2290%22%20rx=%2212%22%20fill=%22%233a1d1b%22%20stroke=%22%23e5484d%22%20stroke-width=%223%22/%3E%3Ctext%20x=%22135%22%20y=%22147%22%20fill=%22%23ffd6d4%22%3EAttacker%3C/text%3E%3Crect%20x=%22305%22%20y=%2295%22%20width=%22190%22%20height=%2290%22%20rx=%2212%22%20fill=%22%231b2a3a%22%20stroke=%22%233ddbd9%22%20stroke-width=%223%22/%3E%3Ctext%20x=%22400%22%20y=%22147%22%20fill=%22%23d6fffe%22%3ETarget%3C/text%3E%3Crect%20x=%22570%22%20y=%2295%22%20width=%22190%22%20height=%2290%22%20rx=%2212%22%20fill=%22%231b3322%22%20stroke=%22%2330a46c%22%20stroke-width=%223%22/%3E%3Ctext%20x=%22665%22%20y=%22147%22%20fill=%22%23d6ffe8%22%3EProtection%3C/text%3E%3Cpath%20d=%22M230%20140H300M495%20140H565%22%20stroke=%22%23e6edf3%22%20stroke-width=%223%22%20fill=%22none%22/%3E%3Ctext%20x=%22400%22%20y=%22250%22%20fill=%22%23aab8c5%22%20font-size=%2220%22%3EPlaceholder%20picture:%20swap%20in%20your%20own%20diagram%3C/text%3E%3C/g%3E%3C/svg%3E" alt="REPLACE: describe your diagram for someone who cannot see it, including the steps it shows">
+      <figcaption>REPLACE: Caption. What does the diagram show, and who made it?</figcaption>
+    </figure>
+    <p class="bad" id="picError" hidden>Your picture did not load. Check that you uploaded the file to your repository, that you clicked Commit changes, and that the file name in src matches exactly (lowercase, including .png).</p>
+
+    <h3>Walk through the attack and the defense</h3>
+    <p>Click a step (or use the buttons) to follow the story. Red steps are the attack. Green steps are where protection helps.</p>
+    <ol class="stepper" id="stepper"></ol>
+    <div class="stepper-controls">
+      <button type="button" id="prevStep">Back</button>
+      <button type="button" id="nextStep" class="primary">Next step</button>
+      <span class="count" id="stepCount"></span>
+    </div>
+  </section>
+
+  <section class="card defense-card" id="protection">
+    <h2><span class="tag defense">FIX</span> The Patch or Protection</h2>
+    <p><strong>Fix / control:</strong> REPLACE (example: apply patch MS17-010, turn on MFA, use parameterized queries) &nbsp;|&nbsp; <strong>Type:</strong> REPLACE (preventive, detective, corrective, or deterrent)</p>
+    <p>REPLACE: Explain how the fix or protection stops or reduces the attack. Say who is responsible for applying it (user, IT team, or vendor).</p>
+    <h3>What you can do today</h3>
+    <ul class="todo" id="todoList"></ul>
+    <p class="todo-status" id="todoStatus" aria-live="polite"></p>
+  </section>
+
+  <section class="card" id="secplus">
+    <h2>Connection to the CompTIA Security+ Exam</h2>
+    <p><strong>Exam objective(s):</strong> REPLACE (example: 2.3 Vulnerability types, 2.5 Mitigation techniques)</p>
+    <p>REPLACE: In 2-3 sentences, explain what a test-taker needs to know about this topic.</p>
+    <h3>Check yourself</h3>
+    <div id="quiz"></div>
+    <p class="score" id="score" aria-live="polite"></p>
+  </section>
+
+  <section class="card" id="sources">
+    <h2>Sources</h2>
+    <p>List at least <strong>6 sources</strong>: 3 for your ethics topic and 3 for your attack and protection topic. Include the creator of any image that is not your own. Write in your own words. Copying is plagiarism.</p>
+    <ol class="sources" id="sourceList">
+      <li>REPLACE: Ethics source 1. Organization or author. "Title of page." Website name. Date accessed. <a href="https://example.com">link</a></li>
+      <li>REPLACE: Ethics source 2</li>
+      <li>REPLACE: Ethics source 3</li>
+      <li>REPLACE: Attack and protection source 1</li>
+      <li>REPLACE: Attack and protection source 2</li>
+      <li>REPLACE: Attack and protection source 3</li>
+    </ol>
+  </section>
+
+  <!-- PAGE CHECK: Run this before you submit. You may delete this whole section when your page passes. -->
+  <section class="checker" id="checker">
+    <h2>Page check</h2>
+    <p>Press the button to see if your page is ready to turn in.</p>
+    <button type="button" id="checkBtn" class="primary">Run page check</button>
+    <ul id="checkResults" aria-live="polite"></ul>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">Student project for Cybersecurity A. This page explains concepts for education only. No real systems were tested or attacked.</div>
+</footer>
+
+<script>
+/* =====================================================================
+   STEP 1: EDIT ONLY THIS BLOCK. Keep the quote marks, commas, and brackets.
+   Replace every REPLACE with your own writing.
+   ===================================================================== */
+const PROJECT = {
+
+  // The story of your attack, in order. Use phase "attack" (red) or "defense" (green).
+  // Include at least 3 attack steps and at least 1 defense step.
+  steps: [
+    { phase: "attack",  title: "REPLACE: Step 1 title", text: "REPLACE: what the attacker does first." },
+    { phase: "attack",  title: "REPLACE: Step 2 title", text: "REPLACE: what happens next." },
+    { phase: "attack",  title: "REPLACE: Step 3 title", text: "REPLACE: the damage if nothing stops it." },
+    { phase: "defense", title: "REPLACE: Protection title", text: "REPLACE: where the patch or protection stops the attack." }
+  ],
+
+  // Three things a student can do today.
+  todo: [
+    "REPLACE: action 1",
+    "REPLACE: action 2",
+    "REPLACE: action 3"
+  ],
+
+  // Two Security+ style questions. "answer" is the number of the right option, starting at 0 (A=0, B=1, C=2, D=3).
+  quiz: [
+    {
+      q: "REPLACE: your first Security+ style question?",
+      options: ["REPLACE: option A", "REPLACE: option B", "REPLACE: option C", "REPLACE: option D"],
+      answer: 0,
+      why: "REPLACE: explain why the right answer is right and why one wrong answer is wrong."
+    },
+    {
+      q: "REPLACE: your second Security+ style question?",
+      options: ["REPLACE: option A", "REPLACE: option B", "REPLACE: option C", "REPLACE: option D"],
+      answer: 1,
+      why: "REPLACE: explanation."
+    }
+  ]
+};
+
+/* =====================================================================
+   DO NOT EDIT BELOW THIS LINE (it makes the page interactive).
+   ===================================================================== */
+(function () {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const MARK = "RE" + "PLACE";   // the word the page check looks for
+
+  /* --- dark / light mode --- */
+  const root = document.documentElement;
+  try { const saved = localStorage.getItem("theme"); if (saved) root.setAttribute("data-theme", saved); } catch (e) {}
+  $("themeBtn").addEventListener("click", function () {
+    const current = root.getAttribute("data-theme") ||
+      (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+    const next = current === "dark" ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch (e) {}
+  });
+
+  /* --- reading progress bar and active nav link --- */
+  const bar = $("progress");
+  const links = Array.prototype.slice.call(document.querySelectorAll(".topbar a"));
+  const sections = links.map(function (a) { return document.querySelector(a.getAttribute("href")); });
+  function onScroll() {
+    const h = document.documentElement;
+    const max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + "%";
+    let idx = 0;
+    sections.forEach(function (s, i) { if (s && s.getBoundingClientRect().top < 140) idx = i; });
+    links.forEach(function (a, i) { a.classList.toggle("active", i === idx); });
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  /* --- attack / defense stepper --- */
+  const stepEl = $("stepper");
+  let active = 0;
+  function renderSteps() {
+    stepEl.innerHTML = "";
+    PROJECT.steps.forEach(function (s, i) {
+      const li = document.createElement("li");
+      li.className = (s.phase === "defense" ? "defense" : "attack") + (i === active ? " active" : "");
+      li.tabIndex = 0;
+      const dot = document.createElement("span"); dot.className = "dot"; dot.textContent = String(i + 1);
+      const body = document.createElement("div");
+      const t = document.createElement("strong"); t.textContent = s.title;
+      const d = document.createElement("span"); d.className = "detail"; d.textContent = s.text;
+      body.appendChild(t); body.appendChild(d);
+      li.appendChild(dot); li.appendChild(body);
+      li.addEventListener("click", function () { active = i; renderSteps(); });
+      li.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); active = i; renderSteps(); } });
+      stepEl.appendChild(li);
+    });
+    $("stepCount").textContent = "Step " + (active + 1) + " of " + PROJECT.steps.length + " (" + PROJECT.steps[active].phase + ")";
+  }
+  $("nextStep").addEventListener("click", function () { active = (active + 1) % PROJECT.steps.length; renderSteps(); });
+  $("prevStep").addEventListener("click", function () { active = (active - 1 + PROJECT.steps.length) % PROJECT.steps.length; renderSteps(); });
+  renderSteps();
+
+  /* --- "what you can do today" checklist --- */
+  const todoList = $("todoList");
+  function updateTodo() {
+    const boxes = todoList.querySelectorAll("input");
+    let done = 0; boxes.forEach(function (b) { if (b.checked) done++; });
+    $("todoStatus").textContent = done === boxes.length ? "All done. Your accounts and devices are safer!" : done + " of " + boxes.length + " done";
+  }
+  PROJECT.todo.forEach(function (text, i) {
+    const li = document.createElement("li");
+    const label = document.createElement("label");
+    const box = document.createElement("input"); box.type = "checkbox"; box.id = "todo" + i;
+    box.addEventListener("change", updateTodo);
+    const span = document.createElement("span"); span.textContent = text;
+    label.appendChild(box); label.appendChild(span); li.appendChild(label); todoList.appendChild(li);
+  });
+  updateTodo();
+
+  /* --- Security+ practice quiz --- */
+  const quizEl = $("quiz");
+  let answered = 0, correct = 0;
+  function updateScore() {
+    $("score").textContent = answered === 0 ? "" : "Score: " + correct + " of " + PROJECT.quiz.length + " correct" + (answered === PROJECT.quiz.length ? ". Quiz complete!" : "");
+  }
+  PROJECT.quiz.forEach(function (item, qi) {
+    const wrap = document.createElement("div"); wrap.className = "q";
+    const q = document.createElement("p"); q.innerHTML = ""; const qs = document.createElement("strong");
+    qs.textContent = "Question " + (qi + 1) + ": " + item.q; q.appendChild(qs); wrap.appendChild(q);
+    const opts = document.createElement("div"); opts.className = "opts";
+    const why = document.createElement("p"); why.className = "why"; why.hidden = true; why.textContent = item.why;
+    const buttons = [];
+    let locked = false;
+    item.options.forEach(function (opt, oi) {
+      const b = document.createElement("button"); b.type = "button";
+      b.textContent = String.fromCharCode(65 + oi) + ". " + opt;
+      b.addEventListener("click", function () {
+        if (locked) return; locked = true; answered++;
+        if (oi === item.answer) { correct++; b.classList.add("right"); }
+        else { b.classList.add("wrong"); buttons[item.answer].classList.add("right"); }
+        why.hidden = false; updateScore();
+      });
+      buttons.push(b); opts.appendChild(b);
+    });
+    wrap.appendChild(opts); wrap.appendChild(why); quizEl.appendChild(wrap);
+  });
+
+  /* --- picture load warning --- */
+  const picEl = $("mainPicture");
+  if (picEl) {
+    picEl.addEventListener("error", function () { $("picError").hidden = false; });
+    picEl.addEventListener("load", function () { $("picError").hidden = true; });
+  }
+
+  /* --- page check --- */
+  $("checkBtn").addEventListener("click", function () {
+    const main = document.querySelector("main");
+    const text = Array.prototype.slice.call(main.querySelectorAll("section.card")).map(function (s) { return s.textContent; }).join(" ");
+    const left = (text.split(MARK).length - 1);
+    const pic = $("mainPicture");
+    const picChanged = pic && !pic.hasAttribute("data-placeholder") && pic.getAttribute("src").indexOf("data:") !== 0;
+    const picLoads = picChanged && pic.complete && pic.naturalWidth > 0;
+    const alt = pic ? pic.getAttribute("alt") || "" : "";
+    const altOk = alt.length >= 20 && alt.indexOf(MARK) === -1;
+    const sources = Array.prototype.slice.call(document.querySelectorAll("#sourceList li")).filter(function (li) { return li.textContent.indexOf(MARK) === -1 && li.textContent.trim().length > 15; }).length;
+    const attackSteps = PROJECT.steps.filter(function (s) { return s.phase === "attack"; }).length;
+    const defenseSteps = PROJECT.steps.filter(function (s) { return s.phase === "defense"; }).length;
+    const checks = [
+      [left === 0, left === 0 ? "Every placeholder has been replaced." : left + " placeholder spot(s) still need your own writing."],
+      [picChanged, picChanged ? "You pointed the picture to your own file." : "The gray placeholder picture is still showing. Add your own diagram."],
+      [picLoads, picLoads ? "Your picture loads. Your upload worked." : "Your picture does not load yet. Upload the file to your repository, click Commit changes, and match the file name exactly."],
+      [altOk, altOk ? "Your picture has real alt text." : "Write alt text (at least a full sentence) that describes your picture."],
+      [attackSteps >= 3 && defenseSteps >= 1, "Walkthrough needs 3+ attack steps and 1+ defense step (you have " + attackSteps + " and " + defenseSteps + ")."],
+      [sources >= 6, sources >= 6 ? "You listed " + sources + " sources." : "You need at least 6 completed sources, 3 for ethics and 3 for attack and protection (you have " + sources + ")."],
+      [PROJECT.quiz.length >= 2, PROJECT.quiz.length >= 2 ? "Two or more practice questions are included." : "Add a second practice question."]
+    ];
+    const ul = $("checkResults"); ul.innerHTML = "";
+    checks.forEach(function (c) {
+      const li = document.createElement("li");
+      const mark = document.createElement("span"); mark.className = c[0] ? "ok" : "bad"; mark.textContent = c[0] ? "PASS " : "FIX ";
+      li.appendChild(mark); li.appendChild(document.createTextNode(c[1])); ul.appendChild(li);
+    });
+  });
+})();
+</script>
+</body>
+</html>
 
