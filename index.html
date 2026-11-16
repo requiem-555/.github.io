@@ -165,10 +165,12 @@
 
   <section class="card attack-card" id="attack">
     <h2><span class="tag attack">ATTACK</span> The Attack</h2>
-    <p><strong>Attack topic:</strong> REPLACE &nbsp;|&nbsp; <strong>Security+ category:</strong> REPLACE (example: application attack, social engineering, malware, network attack)</p>
-    <p>REPLACE: Explain in plain language how the attack works. Describe the idea only. Do NOT post working attack code, real passwords, or instructions for hurting a real system.</p>
+    <p><strong>Attack topic:</strong> REPLACE &nbsp;|&nbsp; <strong>Security+ category:</strong> Social Engineering</p>
+    <p>They obtain a user’s credentials, then attempt to sign in with anything using said credentials, which sends constant MFA approval alerts. The victim eventually gives in & approves the MFA alerts, giving them access to their account
+
+</p>
     <h3>Real-world example</h3>
-    <p>REPLACE: Name a real incident, the date, and what happened.</p>
+    <p>Justin Chan, January 2026, had  38K drained from his checking account.</p>
 
     <!-- REQUIRED PICTURE
          1. Make your OWN diagram of the attack and the protection (Google Drawings, Canva, draw.io, or PowerPoint) and export it as a PNG.
@@ -195,8 +197,8 @@
 
   <section class="card defense-card" id="protection">
     <h2><span class="tag defense">FIX</span> The Patch or Protection</h2>
-    <p><strong>Fix / control:</strong> REPLACE (example: apply patch MS17-010, turn on MFA, use parameterized queries) &nbsp;|&nbsp; <strong>Type:</strong> REPLACE (preventive, detective, corrective, or deterrent)</p>
-    <p>REPLACE: Explain how the fix or protection stops or reduces the attack. Say who is responsible for applying it (user, IT team, or vendor).</p>
+    <p><strong>Fix / control:</strong> Phishing Resistant MFA &nbsp;|&nbsp; <strong>Type:</strong> Preventive</p>
+    <p>IT Admins</p>
     <h3>What you can do today</h3>
     <ul class="todo" id="todoList"></ul>
     <p class="todo-status" id="todoStatus" aria-live="polite"></p>
@@ -204,8 +206,8 @@
 
   <section class="card" id="secplus">
     <h2>Connection to the CompTIA Security+ Exam</h2>
-    <p><strong>Exam objective(s):</strong> REPLACE (example: 2.3 Vulnerability types, 2.5 Mitigation techniques)</p>
-    <p>REPLACE: In 2-3 sentences, explain what a test-taker needs to know about this topic.</p>
+    <p><strong>Exam objective(s):</strong> 5.4 Compliance</p>
+    <p>If you want to get these questions & answers right, you should know at least how MFA attacks work and how Codes of Ethics are structured</p>
     <h3>Check yourself</h3>
     <div id="quiz"></div>
     <p class="score" id="score" aria-live="polite"></p>
@@ -215,12 +217,38 @@
     <h2>Sources</h2>
     <p>List at least <strong>6 sources</strong>: 3 for your ethics topic and 3 for your attack and protection topic. Include the creator of any image that is not your own. Write in your own words. Copying is plagiarism.</p>
     <ol class="sources" id="sourceList">
-      <li>REPLACE: Ethics source 1. Organization or author. "Title of page." Website name. Date accessed. <a href="https://example.com">link</a></li>
-      <li>REPLACE: Ethics source 2</li>
-      <li>REPLACE: Ethics source 3</li>
-      <li>REPLACE: Attack and protection source 1</li>
-      <li>REPLACE: Attack and protection source 2</li>
-      <li>REPLACE: Attack and protection source 3</li>
+      <li>ISC2 
+        ISC2 Code of Ethics 
+        11/2/2026 
+        ISC2 Code of Ethics—Guidance for Cybersecurity Professionals  <a href="https://example.com">link</a></li>
+      <li>ACM 
+        ACM Code of Ethics and Professional Conduct 
+        11/3/2026 
+        Code of Ethics </li>
+      <li>NASW 
+        Read the Code of Ethics 
+        11/3/2026 
+        Code of Ethics: English
+
+</li>
+      <li>BeyondTrust
+MFA Fatigue Attack: Definition & Defense Strategies
+11/10
+MFA Fatigue Attack: Definition & Defense Strategies | BeyondTrust 
+
+</li>
+      <li>Cisco Duo
+MFA Fatigue: What it is and how to respond
+11/10
+MFA fatigue: What it is and how to respond | Cisco Duo 
+
+</li>
+      <li>The University of Tennessee Knoxville
+MFA Fatigue: A Silent Threat to Your Security
+11/10
+MFA Fatigue: A Silent Threat to Your Security | Office of Innovative Technologies 
+
+</li>
     </ol>
   </section>
 
@@ -248,32 +276,32 @@ const PROJECT = {
   // The story of your attack, in order. Use phase "attack" (red) or "defense" (green).
   // Include at least 3 attack steps and at least 1 defense step.
   steps: [
-    { phase: "attack",  title: "REPLACE: Step 1 title", text: "REPLACE: what the attacker does first." },
-    { phase: "attack",  title: "REPLACE: Step 2 title", text: "REPLACE: what happens next." },
-    { phase: "attack",  title: "REPLACE: Step 3 title", text: "REPLACE: the damage if nothing stops it." },
-    { phase: "defense", title: "REPLACE: Protection title", text: "REPLACE: where the patch or protection stops the attack." }
+    { phase: "attack",  title: "The hackers use of stolen credentials", text: "They obtain a user’s credentials, then attempt to sign in with anything using said credentials" },
+    { phase: "attack",  title: "The constant email bombing", text: "The previous step sends constant MFA approval alerts" },
+    { phase: "attack",  title: "The eventual giving-in", text: "They eventually approve the MFA alerts, giving them access to their account" },
+    { phase: "defense", title: "Phishing-Resistant MFA", text: "It stops when the browser checks the URL (for fake websites)" }
   ],
 
   // Three things a student can do today.
   todo: [
-    "REPLACE: action 1",
-    "REPLACE: action 2",
-    "REPLACE: action 3"
+    "Double-check everything they’ve signed in to ",
+    "Keep their credentials somewhere safe",
+    "Always check for fake websites (i.e. goggle.com)"
   ],
 
   // Two Security+ style questions. "answer" is the number of the right option, starting at 0 (A=0, B=1, C=2, D=3).
   quiz: [
     {
-      q: "REPLACE: your first Security+ style question?",
-      options: ["REPLACE: option A", "REPLACE: option B", "REPLACE: option C", "REPLACE: option D"],
-      answer: 0,
-      why: "REPLACE: explain why the right answer is right and why one wrong answer is wrong."
+      q: "How do MFA attacks work?",
+      options: ["With hidden BlueTooth scanners", "High-Voltage electric pulses", "Spamming one's email", "With specalized decryption computers"],
+      answer: 3,
+      why: "If you paid slight attention, you would know that MFA works by spam-sending MFA emails to one's email"
     },
     {
-      q: "REPLACE: your second Security+ style question?",
-      options: ["REPLACE: option A", "REPLACE: option B", "REPLACE: option C", "REPLACE: option D"],
-      answer: 1,
-      why: "REPLACE: explanation."
+      q: "What does the ISC2 Code of Ethics contain?",
+      options: ["A preamble with 3 canons", "No preamble, 4 canons", "A preamble and 4 canons", "No preamble, 3 canons"],
+      answer: 3,
+      why: "ISC2's code only has 4 canons and a preamble, making it much easier to follow than ACM's"
     }
   ]
 };
